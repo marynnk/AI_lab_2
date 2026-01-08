@@ -42,15 +42,13 @@ men_diastolic_pressure_ration = round(
 print(f"Men diastolic blood pressure greater then women {men_diastolic_pressure_ration}%")
 
 max_age = df["age"].max()
-suggested_age_ratio = next((item for item in [days_in_year, 12, 52] if item < 100), None)
-median_age_by_smoking = df.groupby("smoke")["age"].median()
-smoke_ratio_live = abs(
-    (median_age_by_smoking[1] * 12 / days_in_year) - (median_age_by_smoking[0] * suggested_age_ratio / days_in_year))
-print(
-    f"\nSmokers lives {round(smoke_ratio_live, 1)} month less than non-smokers or {round(smoke_ratio_live / suggested_age_ratio, 1)} years")
+suggested_age_ratio = next((item for item in [days_in_year, 12, 52] if max_age/item < 100), None)
+df['age_years'] = df['age'] / suggested_age_ratio
 
+median_age_by_smoking = df.groupby("smoke")["age_years"].median()
+smoke_ratio_live = abs(median_age_by_smoking[1] - median_age_by_smoking[0])
+print(f"\nSmokers lives {round(smoke_ratio_live, 1)} years less than non-smokers")
 
-df['age_years'] = (df['age'] / days_in_year).round()
 
 smokers = df[df['smoke'] == 1]
 
